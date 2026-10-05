@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Livro — Trouvez un livreur</title>
+  <meta name="description" content="Trouvez un livreur près de chez vous au Gabon et appelez-le directement.">
+  <meta name="theme-color" content="#1B4FBF">
+  <meta property="og:title" content="Livro — Trouvez un livreur">
+  <meta property="og:description" content="Les livreurs disponibles près de chez vous. Appelez-les directement.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preload" href="assets/fonts/PlusJakartaSans-700.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face { font-family: "Jakarta"; src: url(assets/fonts/PlusJakartaSans-500.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+    @font-face { font-family: "Jakarta"; src: url(assets/fonts/PlusJakartaSans-600.woff2) format("woff2"); font-weight: 600; font-display: swap; }
+    @font-face { font-family: "Jakarta"; src: url(assets/fonts/PlusJakartaSans-700.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+    @font-face { font-family: "Jakarta"; src: url(assets/fonts/PlusJakartaSans-800.woff2) format("woff2"); font-weight: 800; font-display: swap; }
+    /* Icônes Phosphor (licence MIT), réduites aux seuls glyphes utilisés */
+    @font-face { font-family: "Ph"; src: url(assets/fonts/phosphor-regular.woff) format("woff"); font-display: block; }
+    @font-face { font-family: "PhFill"; src: url(assets/fonts/phosphor-fill.woff) format("woff"); font-display: block; }
+
+    :root {
+      color-scheme: light;
+      --primary: #1B4FBF;
+      --primary-soft: #E8EEFB;
+      --accent: #E39A1C;
+      --bg: #F5F7FA;
+      --surface: #FFFFFF;
+      --line: #E3E8EF;
+      --ink: #10151D;
+      --ink-muted: #5A6472;
+      --ink-faint: #939CAA;
+      --danger: #C7362B;
+      --danger-soft: #FBEAE8;
+      --proche: #1B8A5A; --proche-soft: #E2F4EB;
+      --parages: #D9760B; --parages-soft: #FDEFDD;
+      --loin: #C7362B; --loin-soft: #FBEAE8;
+      --whatsapp: #1FAF54; --whatsapp-soft: #E5F6EB;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: "Jakarta", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    a { color: inherit; }
+    .i { font-family: "Ph"; font-style: normal; font-weight: normal; line-height: 1; display: inline-block; speak: never; }
+    .i.f { font-family: "PhFill"; }
+
+    .page { max-width: 560px; margin: 0 auto; padding: 16px 16px 40px; padding-top: max(16px, env(safe-area-inset-top)); }
+    header { display: flex; align-items: center; gap: 10px; }
+    header .nom { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; flex: 1; }
+    .lien { background: none; border: 0; padding: 8px 6px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; color: var(--ink-muted); cursor: pointer; border-radius: 10px; }
+    .lien:hover { background: rgba(0,0,0,.04); }
+    h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.7px; line-height: 1.15; margin: 28px 0 8px; }
+    .intro { font-size: 15px; color: var(--ink-muted); line-height: 1.45; margin: 0 0 24px; }
+
+    .champ { position: relative; }
+    .champ .i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--primary); pointer-events: none; }
+    .champ .caret { left: auto; right: 16px; font-size: 14px; color: var(--ink-faint); }
+    select {
+      width: 100%; appearance: none; -webkit-appearance: none; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 14px; padding: 16px 44px 16px 48px; font-size: 16px; font-weight: 700;
+    }
+    select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+    .carte { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+    .position { margin-top: 12px; display: flex; align-items: center; gap: 12px; }
+    .position .badge { width: 40px; height: 40px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; font-size: 20px; flex: none; }
+    .position .txt { flex: 1; font-size: 13px; font-weight: 600; line-height: 1.4; }
+    .position .txt small { display: block; font-weight: 500; color: var(--ink-muted); margin-top: 2px; }
+    .position .demo { display: block; text-align: left; background: none; border: 0; padding: 0; color: var(--ink-faint); font-size: 12px; font-weight: 600; text-decoration: underline; cursor: pointer; margin-top: 6px; }
+    .position-on { margin-top: 12px; display: flex; align-items: center; gap: 6px; padding: 0 4px; font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+    .position-on .i { color: var(--proche); font-size: 16px; }
+    .position-on span { flex: 1; }
+
+    .btn { border: 0; border-radius: 14px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; white-space: nowrap; }
+    .btn-primaire { background: var(--primary); color: #fff; height: 44px; padding: 0 18px; font-size: 15px; }
+    .btn-primaire:active { filter: brightness(.95); }
+    .btn-primaire[disabled] { opacity: .6; cursor: default; }
+    .btn-wa { width: 44px; height: 44px; border-radius: 22px; background: var(--whatsapp-soft); color: var(--whatsapp); font-size: 22px; }
+    .btn-large { width: 100%; height: 54px; font-size: 16px; }
+    .btn-contour { background: var(--surface); border: 1px solid var(--line); }
+
+    .titre-section { font-size: 12px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--ink-faint); margin: 20px 4px 10px; }
+    .pastilles { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
+    .pastilles::-webkit-scrollbar { display: none; }
+    .pastille { flex: none; height: 42px; padding: 0 16px; border-radius: 21px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-muted); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .pastille .i { font-size: 18px; }
+    .pastille[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .legende { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: -2px 4px 14px; font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+    .point { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: 1px; }
+
+    .liste { display: grid; gap: 12px; }
+    .livreur { cursor: pointer; }
+    .livreur:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .haut { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; flex: none; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; font-weight: 800; font-size: 16px; object-fit: cover; }
+    .avatar.grand { width: 56px; height: 56px; font-size: 20px; background: var(--primary); color: #fff; }
+    .infos { flex: 1; min-width: 0; }
+    .infos .nom { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+    .meta .i { font-size: 16px; margin-right: 6px; vertical-align: -3px; }
+    .niveau { display: inline-flex; align-items: center; padding: 4px 10px 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .distance { font-size: 18px; font-weight: 800; letter-spacing: -.3px; white-space: nowrap; }
+    .distance.approx { color: var(--ink-muted); }
+    .niveau.approx { background: var(--surface) !important; border: 1px solid currentColor; padding: 3px 9px 3px 7px; }
+    .niveau.approx .point { background: transparent !important; border: 1.5px solid currentColor; box-sizing: border-box; }
+    .base { margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+    .bloc-distance.approx { background: var(--surface) !important; border: 1px solid; }
+    .bloc-distance p { margin: 8px 0 0; font-size: 13px; color: var(--ink-muted); line-height: 1.4; font-weight: 500; }
+    .question { text-align: center; }
+    .question .avatar { margin: 0 auto 14px; }
+    .question h2 { font-size: 19px; margin-bottom: 6px; }
+    .question .choix { display: flex; gap: 12px; margin-top: 20px; }
+    .question .choix .btn { flex: 1; height: 54px; font-size: 16px; }
+    .bas { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); margin-top: 14px; padding-top: 14px; }
+    .numero { flex: 1; font-size: 17px; font-weight: 800; letter-spacing: .2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .vide { text-align: center; padding: 32px 24px; }
+    .vide .icone { width: 64px; height: 64px; border-radius: 19px; background: #E9EDF2; color: var(--ink-faint); display: inline-grid; place-items: center; font-size: 32px; }
+    .vide h3 { font-size: 17px; font-weight: 800; margin: 16px 0 6px; }
+    .vide p { margin: 0; font-size: 14px; color: var(--ink-muted); line-height: 1.45; }
+
+    footer { margin-top: 32px; padding: 0 4px; font-size: 13px; color: var(--ink-muted); line-height: 1.5; }
+    footer p { margin: 0 0 8px; }
+
+    /* Panneaux (fiche livreur, signalement) */
+    dialog { border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 560px; max-height: 92vh; border-radius: 24px 24px 0 0; background: var(--surface); color: var(--ink); }
+    dialog::backdrop { background: rgba(16,21,29,.5); }
+    .panneau { padding: 12px 20px max(20px, env(safe-area-inset-bottom)); }
+    .poignee { width: 40px; height: 4px; border-radius: 4px; background: var(--line); margin: 0 auto 20px; }
+    .fermer { float: right; margin: -4px -8px 0 0; font-size: 22px; }
+    .panneau h2 { font-size: 22px; font-weight: 800; letter-spacing: -.5px; margin: 0 0 18px; }
+    .bloc-distance { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 14px; }
+    .bloc-distance .i { font-size: 22px; }
+    .bloc-distance strong { display: block; font-size: 17px; font-weight: 800; }
+    .bloc-distance span { font-size: 13px; font-weight: 700; }
+    .gros-numero { font-size: 28px; font-weight: 800; letter-spacing: -.3px; margin: 0 4px 20px; user-select: all; }
+    .note { text-align: center; font-size: 12px; color: var(--ink-faint); margin: 12px 0 4px; }
+    label.titre-section { display: block; }
+    .tel { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+    .tel .prefixe { padding: 0 14px; border-right: 1px solid var(--line); font-weight: 700; display: flex; align-items: center; gap: 8px; height: 54px; }
+    .drapeau { width: 24px; height: 17px; border-radius: 3px; background: linear-gradient(#009E60 33.3%, #FCD116 33.3% 66.6%, #3A75C4 66.6%); }
+    .tel input { flex: 1; border: 0; background: none; padding: 0 14px; height: 54px; font-size: 17px; font-weight: 700; letter-spacing: .8px; min-width: 0; border-radius: 14px; }
+    textarea { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.45; resize: vertical; min-height: 130px; }
+    .erreur { color: var(--danger); font-size: 13px; font-weight: 600; margin: 6px 4px 0; }
+    .succes { text-align: center; padding: 24px 0 8px; }
+    .succes .rond { width: 72px; height: 72px; border-radius: 50%; background: var(--primary); color: #fff; display: inline-grid; place-items: center; font-size: 34px; font-weight: 800; }
+    .masque { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <img src="assets/logo.svg" width="36" height="36" alt="">
+      <span class="nom">Livro</span>
+      <button class="lien" id="partager" type="button"><i class="i" aria-hidden="true">&#xe408;</i>Partager</button>
+      <button class="lien" id="signaler" type="button"><i class="i" aria-hidden="true">&#xe244;</i>Signaler</button>
+    </header>
+
+    <h1>Trouvez un livreur</h1>
+    <p class="intro">Appelez-le directement et convenez du prix avec lui.</p>
+
+    <div class="champ">
+      <label for="ville" class="masque">Ville</label>
+      <i class="i" aria-hidden="true">&#xe102;</i>
+      <select id="ville"></select>
+      <i class="i caret" aria-hidden="true">&#xe136;</i>
+    </div>
+
+    <div id="position"></div>
+
+    <div class="titre-section">Véhicule</div>
+    <div class="pastilles" id="vehicules" role="group" aria-label="Véhicule"></div>
+
+    <div class="titre-section" id="compte" aria-live="polite"></div>
+    <div id="legende"></div>
+    <div class="liste" id="liste"></div>
+
+    <footer>
+      <p>Livro met en relation les clients et des livreurs indépendants. Le prix se règle directement avec le livreur.</p>
+      <p>Vous êtes livreur ? Inscrivez-vous gratuitement sur l'application Livro Pro.</p>
+    </footer>
+  </div>
+
+  <dialog id="fiche" aria-labelledby="fiche-nom"></dialog>
+  <dialog id="signalement" aria-labelledby="signalement-titre"></dialog>
+  <dialog id="question" aria-labelledby="question-titre"></dialog>
+
+  <script>
+  // ─── Données ─────────────────────────────────────────────────────────────
+  // Mock : mêmes livreurs que l'app Livro. À remplacer par un appel au backend.
+  const VILLES = {
+    "Libreville": [0.3925, 9.4536], "Owendo": [0.2850, 9.5000], "Ntoum": [0.3906, 9.7611],
+    "Port-Gentil": [-0.7193, 8.7815], "Franceville": [-1.6333, 13.5833], "Lambaréné": [-0.7000, 10.2333],
+    "Oyem": [1.5995, 11.5793], "Mouila": [-1.8667, 11.0556],
+  };
+  const LIVREURS = [
+    { nom: "Jean-Pierre Moussavou", tel: "+241077000001", vehicule: "moto", ville: "Libreville", whatsapp: true, photo: "assets/photos/livreur-demo-1.jpg", pos: [0.4005, 9.4576] },
+    { nom: "Rodrigue Nzamba", tel: "+241066223344", vehicule: "moto", ville: "Libreville", whatsapp: true, pos: [0.4175, 9.4436] },
+    { nom: "Christian Ondo", tel: "+241077334455", vehicule: "voiture", ville: "Libreville", photo: "assets/photos/livreur-demo-2.jpg", pos: [0.4525, 9.4836] },
+    { nom: "Patrick Mba", tel: "+241062445566", vehicule: "velo", ville: "Libreville", quartier: "Akébé" }, // sans smartphone
+    { nom: "Laurent Ella", tel: "+241074220011", vehicule: "moto", ville: "Libreville", whatsapp: true, photo: "assets/photos/livreur-demo-3.jpg", pos: [0.3805, 9.4596] },
+    { nom: "Aline Ondo", tel: "+241066123456", vehicule: "voiture", ville: "Owendo", whatsapp: true, pos: [0.3150, 9.5000] },
+    { nom: "Brice Nzoghe", tel: "+241074556677", vehicule: "moto", ville: "Owendo", quartier: "Akournam" }, // sans smartphone
+    { nom: "Paul Obame", tel: "+241076112233", vehicule: "moto", ville: "Ntoum", pos: [0.3956, 9.7631] },
+  ];
+  // Quartiers de rattachement (point central approximatif, à vérifier sur le terrain) :
+  // situent les livreurs sans localisation en direct.
+  const QUARTIERS = {
+    "Libreville": { "Centre-ville": [0.3920, 9.4540], "Louis": [0.4080, 9.4430], "Glass": [0.3800, 9.4460], "Akébé": [0.3800, 9.4700],
+      "Lalala": [0.3650, 9.4600], "Nzeng-Ayong": [0.4150, 9.4900], "Okala": [0.4880, 9.4880], "Angondjé": [0.5300, 9.4500] },
+    "Owendo": { "Owendo Centre": [0.2850, 9.5000], "Akournam": [0.2950, 9.5050], "Alénakiri": [0.3050, 9.5150], "Barracuda": [0.2750, 9.4950] },
+    "Ntoum": { "Ntoum Centre": [0.3906, 9.7611], "Bikélé": [0.4100, 9.6200] },
+  };
+  const VEHICULES = { moto: ["Moto", ""], velo: ["Vélo", ""], voiture: ["Voiture", ""] };
+  // Seuils des niveaux de proximité (identiques à l'app)
+  const SEUIL_PROCHE = 2, SEUIL_PARAGES = 5;
+  const NIVEAUX = {
+    proche: { label: "Proche", c: "var(--proche)", f: "var(--proche-soft)" },
+    parages: { label: "Dans les parages", c: "var(--parages)", f: "var(--parages-soft)" },
+    loin: { label: "Loin", c: "var(--loin)", f: "var(--loin-soft)" },
+  };
+
+  // ─── État ────────────────────────────────────────────────────────────────
+  const etat = { ville: "Libreville", vehicule: null, position: null, positionDemo: false, positionEtat: "off" };
+  try { const v = localStorage.getItem("livro.ville"); if (v && VILLES[v]) etat.ville = v; } catch (_) {}
+
+  // ─── Utilitaires ─────────────────────────────────────────────────────────
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  function formatTel(t) {
+    const d = t.replace("+241", "");
+    const premier = d.length % 2 ? 3 : 2;
+    let out = "+241 ";
+    for (let i = 0; i < d.length; i++) { if (i >= premier && (i - premier) % 2 === 0) out += " "; out += d[i]; }
+    return out;
+  }
+  function initiales(nom) {
+    const m = nom.trim().split(/\s+/);
+    return (m.length === 1 ? m[0][0] : m[0][0] + m[m.length - 1][0]).toUpperCase();
+  }
+  function distanceKm(a, b) {
+    const rad = (x) => (x * Math.PI) / 180;
+    const dLat = rad(b[0] - a[0]), dLng = rad(b[1] - a[1]);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2;
+    return 2 * 6371 * Math.asin(Math.sqrt(h));
+  }
+  function niveau(km) { return km <= SEUIL_PROCHE ? "proche" : km <= SEUIL_PARAGES ? "parages" : "loin"; }
+  function formatDistance(km) {
+    const m = Math.round((km * 1000) / 50) * 50;
+    if (m < 1000) return m + " m";
+    if (km < 10) return km.toFixed(1).replace(".", ",") + " km";
+    return Math.round(km) + " km";
+  }
+  const lienWhatsApp = (tel) => "https://wa.me/" + tel.replace("+", "");
+  function avatar(l, grand) {
+    const cls = "avatar" + (grand ? " grand" : "");
+    return l.photo
+      ? `<img class="${cls}" src="${esc(l.photo)}" alt="" loading="lazy">`
+      : `<span class="${cls}" aria-hidden="true">${esc(initiales(l.nom))}</span>`;
+  }
+  const pointNiveau = (n) => `<span class="point" style="background:${NIVEAUX[n].c}"></span>`;
+  const pastilleNiveau = (n, approx) => `<span class="niveau${approx ? " approx" : ""}" style="background:${NIVEAUX[n].f};color:${NIVEAUX[n].c}">${pointNiveau(n)}${NIVEAUX[n].label}</span>`;
+
+  // ─── Liste ───────────────────────────────────────────────────────────────
+  // Du plus proche au plus lointain ; sans position du client, ordre alphabétique.
+  function livreursVisibles() {
+    const liste = LIVREURS
+      .filter((l) => l.ville === etat.ville && (!etat.vehicule || l.vehicule === etat.vehicule))
+      .map((l) => {
+        if (!etat.position) return { ...l, km: null };
+        if (l.pos) return { ...l, km: distanceKm(etat.position, l.pos) };
+        const base = l.quartier && QUARTIERS[l.ville]?.[l.quartier];
+        return { ...l, km: base ? distanceKm(etat.position, base) : null, approx: !!base };
+      });
+    liste.sort((a, b) => {
+      if (a.km == null && b.km == null) return a.nom.localeCompare(b.nom, "fr");
+      if (a.km == null) return 1;
+      if (b.km == null) return -1;
+      return a.km - b.km;
+    });
+    return liste;
+  }
+
+  function rendreVilles() {
+    $("#ville").innerHTML = Object.keys(VILLES).map((v) => `<option${v === etat.ville ? " selected" : ""}>${esc(v)}</option>`).join("");
+  }
+
+  function rendrePosition() {
+    const el = $("#position");
+    if (etat.positionEtat === "on") {
+      const libelle = etat.positionDemo ? `Position simulée (centre de ${esc(etat.ville)})` : "Position activée";
+      el.innerHTML = `<div class="position-on"><i class="i f" aria-hidden="true">&#xe316;</i><span>${libelle}</span>
+        <button class="lien" type="button" data-action="position-off">Désactiver</button></div>`;
+      return;
+    }
+    const messages = {
+      off: ["Activez votre position pour voir les livreurs les plus proches de vous.", ""],
+      loading: ["Recherche de votre position…", ""],
+      refus: ["Position refusée.", "Autorisez la localisation pour ce site dans les réglages du navigateur."],
+      indispo: ["Position indisponible.", "Vérifiez que la localisation de votre téléphone est activée."],
+      nonsecure: ["Position indisponible.", "La localisation ne fonctionne que sur une page sécurisée (https)."],
+    };
+    const [titre, detail] = messages[etat.positionEtat];
+    el.innerHTML = `<div class="carte position">
+      <span class="badge" aria-hidden="true"><i class="i">&#xe1d6;</i></span>
+      <div class="txt">${titre}${detail ? `<small>${detail}</small>` : ""}
+        <button class="demo" type="button" data-action="position-demo">ou simuler une position (démo)</button></div>
+      <button class="btn btn-primaire" type="button" data-action="position-on" ${etat.positionEtat === "loading" ? "disabled" : ""}>Activer</button>
+    </div>`;
+  }
+
+  function rendreVehicules() {
+    const opts = [[null, "Tous", ""], ...Object.entries(VEHICULES).map(([k, [label, icone]]) => [k, label, icone])];
+    $("#vehicules").innerHTML = opts.map(([k, label, icone]) =>
+      `<button class="pastille" type="button" data-vehicule="${k ?? ""}" aria-pressed="${etat.vehicule === k}">${icone ? `<i class="i" aria-hidden="true">${icone}</i>` : ""}${label}</button>`
+    ).join("");
+  }
+
+  function rendreListe() {
+    const liste = livreursVisibles();
+    $("#compte").textContent = liste.length > 1 ? `${liste.length} livreurs disponibles` : `${liste.length} livreur disponible`;
+    $("#legende").innerHTML = etat.position && liste.length
+      ? `<div class="legende"><span>${pointNiveau("proche")}Proche (&lt; ${SEUIL_PROCHE}&nbsp;km)</span><span>${pointNiveau("parages")}Dans les parages (${SEUIL_PROCHE}&nbsp;km à ${SEUIL_PARAGES}&nbsp;km)</span><span>${pointNiveau("loin")}Loin (&gt; ${SEUIL_PARAGES}&nbsp;km)</span>${liste.some((l) => l.approx) ? `<span>Pastille en contour et « ~ » : position approximative, d'après le quartier de base du livreur (pas de localisation en direct)</span>` : ""}</div>`
+      : "";
+    if (!liste.length) {
+      $("#liste").innerHTML = `<div class="vide"><span class="icone"><i class="i" aria-hidden="true">&#xe80a;</i></span>
+        <h3>Aucun livreur disponible</h3><p>Pas de livreur disponible à ${esc(etat.ville)} pour le moment. Essayez un autre véhicule ou revenez plus tard.</p></div>`;
+      return;
+    }
+    $("#liste").innerHTML = liste.map((l, i) => {
+      const [vLabel, vIcone] = VEHICULES[l.vehicule];
+      const n = l.km != null ? niveau(l.km) : null;
+      return `<article class="carte livreur" tabindex="0" data-index="${i}" aria-label="${esc(l.nom)}">
+        <div class="haut">
+          ${avatar(l)}
+          <div class="infos">
+            <div class="nom">${esc(l.nom)}</div>
+            <div class="meta"><span><i class="i" aria-hidden="true">${vIcone}</i>${vLabel}</span>${n ? pastilleNiveau(n, l.approx) : ""}</div>
+            ${l.approx ? `<div class="base">Basé à ${esc(l.quartier)} · position approximative</div>` : ""}
+          </div>
+          ${l.km != null ? `<div class="distance${l.approx ? " approx" : ""}">${l.approx ? "~\u00a0" : ""}${formatDistance(l.km)}</div>` : ""}
+        </div>
+        <div class="bas">
+          <span class="numero">${formatTel(l.tel)}</span>
+          ${l.whatsapp ? `<a class="btn btn-wa" href="${lienWhatsApp(l.tel)}" target="_blank" rel="noopener" aria-label="Appeler ${esc(l.nom)} sur WhatsApp" data-stop><i class="i" aria-hidden="true">&#xe5d0;</i></a>` : ""}
+          <a class="btn btn-primaire" href="tel:${l.tel}" data-stop><i class="i f" aria-hidden="true">&#xe3b8;</i>Appeler</a>
+        </div>
+      </article>`;
+    }).join("");
+    $("#liste")._donnees = liste;
+  }
+
+  function rendre() { rendrePosition(); rendreVehicules(); rendreListe(); }
+
+  // ─── Fiche livreur ───────────────────────────────────────────────────────
+  function ouvrirFiche(l) {
+    const [vLabel, vIcone] = VEHICULES[l.vehicule];
+    const n = l.km != null ? niveau(l.km) : null;
+    const d = $("#fiche");
+    d.innerHTML = `<div class="panneau">
+      <div class="poignee"></div>
+      <button class="lien fermer" type="button" data-fermer aria-label="Fermer"><i class="i" aria-hidden="true">&#xe4f6;</i></button>
+      <div class="haut">${avatar(l, true)}<div class="infos">
+        <h2 id="fiche-nom" style="margin:0;font-size:20px">${esc(l.nom)}</h2>
+        <div class="meta" style="margin-top:4px"><span><i class="i" aria-hidden="true">${vIcone}</i>${vLabel} · ${esc(l.ville)}</span></div>
+      </div></div>
+      ${n ? `<div class="titre-section" style="margin-top:24px">Distance</div>
+        <div class="bloc-distance${l.approx ? " approx" : ""}" style="background:${NIVEAUX[n].f};border-color:${NIVEAUX[n].c}"><i class="i${l.approx ? "" : " f"}" aria-hidden="true" style="color:${NIVEAUX[n].c}">&#xe316;</i>
+        <div><strong>${l.approx ? "Environ" : "À"} ${formatDistance(l.km)} de vous</strong><span style="color:${NIVEAUX[n].c}">${NIVEAUX[n].label}</span>
+        ${l.approx ? `<p>Ce livreur n'a pas de localisation en direct. Distance calculée depuis son quartier de base : ${esc(l.quartier)}.</p>` : ""}</div></div>` : ""}
+      <div class="titre-section" style="margin-top:20px">Numéro</div>
+      <div class="gros-numero">${formatTel(l.tel)}</div>
+      <a class="btn btn-primaire btn-large" href="tel:${l.tel}" data-appel><i class="i f" aria-hidden="true">&#xe3b8;</i>Appeler</a>
+      ${l.whatsapp ? `<a class="btn btn-contour btn-large" style="margin-top:10px;color:var(--whatsapp)" href="${lienWhatsApp(l.tel)}" target="_blank" rel="noopener" data-appel><i class="i" aria-hidden="true">&#xe5d0;</i>Appeler sur WhatsApp</a>` : ""}
+      <p class="note">Le prix se règle directement avec le livreur.</p>
+      <div style="text-align:center"><button class="lien" type="button" data-signaler="${esc(l.tel)}"><i class="i" aria-hidden="true">&#xe244;</i>Signaler ce livreur</button></div>
+    </div>`;
+    d._livreur = l;
+    d.showModal();
+  }
+
+  // ─── Signalement ─────────────────────────────────────────────────────────
+  function ouvrirSignalement(tel) {
+    const d = $("#signalement");
+    const local = tel ? tel.replace("+241", "").replace(/^(\d{3})(\d{2})(\d{2})(\d{2})$/, "$1 $2 $3 $4") : "";
+    d.innerHTML = `<form class="panneau" novalidate>
+      <div class="poignee"></div>
+      <button class="lien fermer" type="button" data-fermer aria-label="Fermer"><i class="i" aria-hidden="true">&#xe4f6;</i></button>
+      <h2 id="signalement-titre">Signaler un livreur</h2>
+      <p class="intro" style="margin-bottom:8px">Un problème avec un livreur ? Indiquez son numéro et expliquez ce qui s'est passé. Notre équipe examine chaque signalement.</p>
+      <label class="titre-section" for="sig-tel">Numéro du livreur</label>
+      <div class="tel"><span class="prefixe"><span class="drapeau" aria-hidden="true"></span>+241</span>
+        <input id="sig-tel" inputmode="numeric" autocomplete="off" placeholder="077 12 34 56" value="${local}"></div>
+      <p class="erreur" id="sig-tel-err" hidden></p>
+      <label class="titre-section" for="sig-msg">Votre message</label>
+      <textarea id="sig-msg" maxlength="500" placeholder="Ex. : colis non livré, retard important, comportement…"></textarea>
+      <p class="erreur" id="sig-msg-err" hidden></p>
+      <button class="btn btn-primaire btn-large" type="submit" style="margin-top:16px">Envoyer le signalement</button>
+    </form>`;
+    const champ = d.querySelector("#sig-tel");
+    champ.addEventListener("input", () => {
+      const chiffres = champ.value.replace(/\D/g, "").slice(0, 9);
+      champ.value = chiffres.replace(/^(\d{3})(\d{0,2})(\d{0,2})(\d{0,2}).*/, (_, a, b, c, e) => [a, b, c, e].filter(Boolean).join(" ")) || chiffres;
+      d.querySelector("#sig-tel-err").hidden = true;
+    });
+    d.querySelector("#sig-msg").addEventListener("input", () => (d.querySelector("#sig-msg-err").hidden = true));
+    d.querySelector("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const chiffres = champ.value.replace(/\D/g, "");
+      const msg = d.querySelector("#sig-msg").value.trim();
+      let ok = true;
+      if (chiffres.length !== 9) { ok = false; Object.assign(d.querySelector("#sig-tel-err"), { hidden: false, textContent: "Le numéro doit avoir 9 chiffres" }); }
+      if (msg.length < 10) { ok = false; Object.assign(d.querySelector("#sig-msg-err"), { hidden: false, textContent: "Décrivez ce qui s'est passé (au moins 10 caractères)" }); }
+      if (!ok) return;
+      // Mock : à envoyer au backend (traité ensuite dans Livro Admin)
+      d.innerHTML = `<div class="panneau"><div class="poignee"></div><div class="succes">
+        <span class="rond" aria-hidden="true">✓</span>
+        <h2 style="margin:20px 0 8px">Signalement envoyé</h2>
+        <p class="intro">Merci. Notre équipe va l'examiner et prendre les mesures nécessaires.</p>
+        <button class="btn btn-primaire btn-large" type="button" data-fermer>Retour aux livreurs</button></div></div>`;
+    });
+    d.showModal();
+    if (!tel) champ.focus();
+  }
+
+  // ─── Question après l'appel ──────────────────────────────────────────────
+  // Au retour sur la page après un appel, on demande si le livreur a répondu.
+  // Les « non » permettront au backend de repasser en indisponible un livreur injoignable.
+  let appelEnAttente = null;
+  const nonReponses = []; // mock : à envoyer au backend
+  function demanderSiReponse(l) {
+    const d = $("#question");
+    d.innerHTML = `<div class="panneau question">
+      <div class="poignee"></div>
+      ${avatar(l, true)}
+      <h2 id="question-titre">Avez-vous pu joindre ${esc(l.nom)}&nbsp;?</h2>
+      <p class="intro" style="margin:0">Votre réponse nous aide à n'afficher que les livreurs vraiment disponibles.</p>
+      <div class="choix">
+        <button class="btn btn-contour" type="button" data-reponse="non">Non</button>
+        <button class="btn btn-primaire" type="button" data-reponse="oui">Oui</button>
+      </div></div>`;
+    d.querySelectorAll("[data-reponse]").forEach((b) => b.addEventListener("click", () => {
+      if (b.dataset.reponse === "non") nonReponses.push({ tel: l.tel, le: new Date().toISOString() });
+      d.close();
+    }));
+    d.showModal();
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || !appelEnAttente) return;
+    const appel = appelEnAttente;
+    appelEnAttente = null;
+    if (Date.now() - appel.le > 2000) demanderSiReponse(appel.livreur);
+  });
+
+  // ─── Position du client ──────────────────────────────────────────────────
+  function activerPosition() {
+    if (!window.isSecureContext || !navigator.geolocation) { etat.positionEtat = "nonsecure"; rendrePosition(); return; }
+    etat.positionEtat = "loading"; rendrePosition();
+    navigator.geolocation.getCurrentPosition(
+      (p) => { etat.position = [p.coords.latitude, p.coords.longitude]; etat.positionDemo = false; etat.positionEtat = "on"; rendre(); },
+      (err) => { etat.positionEtat = err.code === 1 ? "refus" : "indispo"; rendrePosition(); },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  }
+
+  // ─── Événements ──────────────────────────────────────────────────────────
+  $("#ville").addEventListener("change", (e) => {
+    etat.ville = e.target.value;
+    try { localStorage.setItem("livro.ville", etat.ville); } catch (_) {}
+    if (etat.positionDemo) etat.position = VILLES[etat.ville];
+    rendre();
+  });
+  document.addEventListener("click", (e) => {
+    const cible = e.target.closest("[data-action],[data-vehicule],[data-fermer],[data-signaler],[data-stop],[data-appel],.livreur");
+    if (!cible) return;
+    if (cible.hasAttribute("data-stop") || cible.hasAttribute("data-appel")) {
+      // liens Appeler / WhatsApp : comportement natif, on retient l'appel pour la question au retour
+      const carte = cible.closest(".livreur");
+      const l = carte ? $("#liste")._donnees[+carte.dataset.index] : $("#fiche")._livreur;
+      if (l) appelEnAttente = { livreur: l, le: Date.now() };
+      return;
+    }
+    if (cible.dataset.action === "position-on") return activerPosition();
+    if (cible.dataset.action === "position-demo") { etat.position = VILLES[etat.ville]; etat.positionDemo = true; etat.positionEtat = "on"; return rendre(); }
+    if (cible.dataset.action === "position-off") { etat.position = null; etat.positionDemo = false; etat.positionEtat = "off"; return rendre(); }
+    if (cible.hasAttribute("data-vehicule")) { etat.vehicule = cible.dataset.vehicule || null; rendreVehicules(); return rendreListe(); }
+    if (cible.hasAttribute("data-fermer")) return cible.closest("dialog").close();
+    if (cible.hasAttribute("data-signaler")) { $("#fiche").close(); return ouvrirSignalement(cible.dataset.signaler); }
+    if (cible.classList.contains("livreur")) return ouvrirFiche($("#liste")._donnees[+cible.dataset.index]);
+  });
+  document.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList?.contains("livreur")) { e.preventDefault(); ouvrirFiche($("#liste")._donnees[+e.target.dataset.index]); }
+  });
+  // Fermer un panneau en touchant le fond
+  document.querySelectorAll("dialog").forEach((d) => d.addEventListener("click", (e) => { if (e.target === d) d.close(); }));
+  $("#signaler").addEventListener("click", () => ouvrirSignalement(""));
+  $("#partager").addEventListener("click", async () => {
+    const donnees = { title: "Livro", text: "Trouvez un livreur près de chez vous et appelez-le directement :", url: location.href };
+    if (navigator.share) { try { await navigator.share(donnees); } catch (_) {} return; }
+    window.open("https://wa.me/?text=" + encodeURIComponent(donnees.text + " " + donnees.url), "_blank", "noopener");
+  });
+
+  rendreVilles();
+  rendre();
+  </script>
+</body>
+</html>
