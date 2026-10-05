@@ -13,6 +13,7 @@ import '../../data/models/livreur.dart';
 import '../../providers/appel_provider.dart';
 import '../../providers/livreurs_provider.dart';
 import '../../providers/position_provider.dart';
+import '../../services/notifications.dart';
 import 'question_appel_sheet.dart';
 import 'fiche_livreur_sheet.dart';
 
@@ -30,6 +31,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> with WidgetsBindi
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => Notifications.activer());
   }
 
   @override

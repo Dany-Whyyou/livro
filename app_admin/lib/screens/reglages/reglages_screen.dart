@@ -9,6 +9,7 @@ import '../../core/widgets/app_card.dart';
 import '../../providers/admins_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/villes_provider.dart';
+import '../../services/notifications.dart';
 
 class ReglagesScreen extends ConsumerWidget {
   const ReglagesScreen({super.key});
@@ -28,6 +29,7 @@ class ReglagesScreen extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
+              Notifications.oublier();
               ref.read(authProvider.notifier).logout();
               context.go('/phone');
             },

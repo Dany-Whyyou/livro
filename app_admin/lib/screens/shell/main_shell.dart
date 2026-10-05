@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/livreur.dart';
 import '../../providers/livreurs_provider.dart';
 import '../../providers/signalements_provider.dart';
+import '../../services/notifications.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
@@ -16,6 +17,8 @@ class MainShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Une fois connecté : notifications des admins (sans effet si déjà activées)
+    WidgetsBinding.instance.addPostFrameCallback((_) => Notifications.activer());
     final location = GoRouterState.of(context).uri.path;
     final index = _routes.indexOf(location);
 

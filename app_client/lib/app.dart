@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/router/app_router.dart';
+import 'services/notifications.dart';
 import 'core/theme/app_theme.dart';
 
 class LivroApp extends StatelessWidget {
@@ -11,6 +12,7 @@ class LivroApp extends StatelessWidget {
       title: 'Livro',
       theme: AppTheme.theme,
       routerConfig: appRouter,
+      scaffoldMessengerKey: messengerKey,
       debugShowCheckedModeBanner: false,
     );
   }

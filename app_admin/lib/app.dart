@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/router/app_router.dart';
+import 'services/notifications.dart';
 import 'core/theme/app_theme.dart';
 
 class LivroAdminApp extends StatelessWidget {
@@ -8,6 +9,12 @@ class LivroAdminApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(title: 'Livro Admin', theme: AppTheme.theme, routerConfig: appRouter, debugShowCheckedModeBanner: false);
+    return MaterialApp.router(
+      title: 'Livro Admin',
+      theme: AppTheme.theme,
+      routerConfig: appRouter,
+      scaffoldMessengerKey: messengerKey,
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

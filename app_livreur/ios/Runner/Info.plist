@@ -9,6 +9,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
+		<string>remote-notification</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Livro Pro utilise l'appareil photo pour votre photo de profil.</string>

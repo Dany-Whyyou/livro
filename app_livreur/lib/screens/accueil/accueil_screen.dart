@@ -16,6 +16,7 @@ import '../../providers/injoignable_provider.dart';
 import '../../data/quartiers.dart';
 import '../../core/widgets/quartier_picker.dart';
 import '../../providers/photo_provider.dart';
+import '../../services/notifications.dart';
 import '../../core/widgets/photo_picker.dart';
 import '../../providers/profil_provider.dart';
 
@@ -47,6 +48,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> {
     _ville = p.ville;
     _whatsapp = p.whatsapp;
     _quartier = p.quartier;
+    WidgetsBinding.instance.addPostFrameCallback((_) => Notifications.activer());
   }
 
   @override
@@ -103,6 +105,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> {
               Navigator.of(ctx).pop();
               ref.read(modeDisponibiliteProvider.notifier).state = ModeDisponibilite.indisponible;
               ref.read(suiviPositionProvider.notifier).desactiver();
+              Notifications.oublier();
               ref.read(authProvider.notifier).logout();
               context.go('/phone');
             },
