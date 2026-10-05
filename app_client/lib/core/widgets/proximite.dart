@@ -51,12 +51,16 @@ class ProximitePill extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 6),
-          Text(
-            proximite.label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: proximite == Proximite.inconnue ? AppTheme.inkMuted : proximite.couleur,
+          Flexible(
+            child: Text(
+              proximite.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: proximite == Proximite.inconnue ? AppTheme.inkMuted : proximite.couleur,
+              ),
             ),
           ),
         ],
@@ -91,9 +95,11 @@ class ProximiteLegende extends StatelessWidget {
                 children: [
                   Container(width: 8, height: 8, decoration: BoxDecoration(color: p.couleur, shape: BoxShape.circle)),
                   const SizedBox(width: 6),
-                  Text(
-                    '${p.label} ($seuil)',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.inkMuted),
+                  Flexible(
+                    child: Text(
+                      '${p.label} ($seuil)',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.inkMuted),
+                    ),
                   ),
                 ],
               ),

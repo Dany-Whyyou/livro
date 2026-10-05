@@ -2,3 +2,6 @@
 .idea/
 .vscode/
 *.iml
+
+# Clés privées Firebase (compte de service) : jamais dans le dépôt
+*firebase-adminsdk*.json

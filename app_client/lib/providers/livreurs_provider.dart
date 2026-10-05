@@ -3,6 +3,7 @@ import '../core/utils/distance.dart';
 import '../data/models/livreur.dart';
 import '../data/mock/mock_data.dart';
 import '../data/quartiers.dart';
+import 'position_provider.dart';
 
 const villes = ['Libreville', 'Owendo', 'Ntoum', 'Port-Gentil', 'Franceville', 'Lambaréné', 'Oyem', 'Mouila'];
 
@@ -11,15 +12,8 @@ final villeProvider = StateProvider<String>((ref) => 'Libreville');
 /// null = tous les véhicules
 final vehiculeFiltreProvider = StateProvider<TypeVehicule?>((ref) => null);
 
-/// Le client a autorisé l'accès à sa position.
-final positionActiveProvider = StateProvider<bool>((ref) => false);
-
 /// Position du client, ou null s'il ne l'a pas activée.
-/// Mock : le centre de la ville choisie, en attendant le GPS.
-final positionClientProvider = Provider<Coordonnees?>((ref) {
-  if (!ref.watch(positionActiveProvider)) return null;
-  return centresVilles[ref.watch(villeProvider)];
-});
+final positionClientProvider = Provider<Coordonnees?>((ref) => ref.watch(positionProvider).coordonnees);
 
 LivreurProche _avecDistance(Livreur l, Coordonnees? client) {
   if (client == null) return LivreurProche(l, null);

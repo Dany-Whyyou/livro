@@ -1,4 +1,4 @@
-package com.gabonlivreur.app_client
+package com.dadel.livrolivreur
 
 import io.flutter.embedding.android.FlutterActivity
 

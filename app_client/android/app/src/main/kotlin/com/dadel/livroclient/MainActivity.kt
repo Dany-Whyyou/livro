@@ -1,4 +1,4 @@
-package com.gabonlivreur.app_admin
+package com.dadel.livroclient
 
 import io.flutter.embedding.android.FlutterActivity
 

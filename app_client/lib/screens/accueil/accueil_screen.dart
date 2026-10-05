@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ import '../../core/widgets/proximite.dart';
 import '../../data/models/livreur.dart';
 import '../../providers/appel_provider.dart';
 import '../../providers/livreurs_provider.dart';
+import '../../providers/position_provider.dart';
 import 'question_appel_sheet.dart';
 import 'fiche_livreur_sheet.dart';
 
@@ -40,6 +42,8 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> with WidgetsBindi
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
+    // Le client a pu se déplacer : on relit sa position
+    if (ref.read(positionProvider).statut == StatutPosition.active) ref.read(positionProvider.notifier).actualiser();
     final appel = ref.read(appelEnAttenteProvider);
     if (appel == null) return;
     ref.read(appelEnAttenteProvider.notifier).state = null;
@@ -51,7 +55,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> with WidgetsBindi
     final ville = ref.watch(villeProvider);
     final vehicule = ref.watch(vehiculeFiltreProvider);
     final livreurs = ref.watch(livreursProvider);
-    final positionActive = ref.watch(positionActiveProvider);
+    final positionActive = ref.watch(positionClientProvider) != null;
 
     return Scaffold(
       body: SafeArea(
@@ -95,11 +99,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> with WidgetsBindi
               },
             ),
             const SizedBox(height: 12),
-            _PositionCard(
-              active: positionActive,
-              ville: ville,
-              onChanged: (v) => ref.read(positionActiveProvider.notifier).state = v,
-            ),
+            _PositionCard(ville: ville),
             const SizedBox(height: 20),
             const SectionTitle('Véhicule'),
             _Choix<TypeVehicule?>(
@@ -171,16 +171,16 @@ class _WhatsAppButton extends ConsumerWidget {
 }
 
 /// Invite à activer sa position ; une fois activée, les livreurs sont triés par distance.
-class _PositionCard extends StatelessWidget {
-  final bool active;
+class _PositionCard extends ConsumerWidget {
   final String ville;
-  final ValueChanged<bool> onChanged;
-
-  const _PositionCard({required this.active, required this.ville, required this.onChanged});
+  const _PositionCard({required this.ville});
 
   @override
-  Widget build(BuildContext context) {
-    if (active) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final position = ref.watch(positionProvider);
+    final notifier = ref.read(positionProvider.notifier);
+
+    if (position.statut == StatutPosition.active) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
@@ -189,12 +189,12 @@ class _PositionCard extends StatelessWidget {
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                'Position activée (démo : centre de $ville)',
+                position.simulee ? 'Position simulée (démo : centre de $ville)' : 'Position activée',
                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.inkMuted),
               ),
             ),
             TextButton(
-              onPressed: () => onChanged(false),
+              onPressed: notifier.desactiver,
               style: TextButton.styleFrom(foregroundColor: AppTheme.inkMuted, visualDensity: VisualDensity.compact),
               child: const Text('Désactiver'),
             ),
@@ -202,27 +202,62 @@ class _PositionCard extends StatelessWidget {
         ),
       );
     }
+
+    final (texte, detail, erreur) = switch (position.statut) {
+      StatutPosition.recherche => ('Recherche de votre position…', null, false),
+      StatutPosition.refusee => ('Position refusée.', 'Autorisez l\'accès à votre position pour voir les livreurs proches.', true),
+      StatutPosition.bloquee => ('Accès à la position bloqué.', 'Autorisez-le pour Livro dans les réglages du téléphone.', true),
+      StatutPosition.gpsCoupe => ('La localisation du téléphone est coupée.', 'Activez-la pour voir les livreurs proches.', true),
+      StatutPosition.introuvable => ('Position introuvable pour le moment.', 'Réessayez dans un endroit dégagé.', true),
+      _ => ('Activez votre position pour voir les livreurs les plus proches de vous.', null, false),
+    };
+    final reglages = position.statut == StatutPosition.bloquee || position.statut == StatutPosition.gpsCoupe;
+
     return AppCard(
-      child: Row(
+      borderColor: erreur ? AppTheme.danger : AppTheme.line,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const IconBadge(icon: AppIcons.crosshair, size: 40),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              'Activez votre position pour voir les livreurs les plus proches de vous.',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.ink, height: 1.4),
-            ),
+          Row(
+            children: [
+              const IconBadge(icon: AppIcons.crosshair, size: 40),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      texte,
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: erreur ? AppTheme.danger : AppTheme.ink, height: 1.4),
+                    ),
+                    if (detail != null) Text(detail, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.inkMuted, height: 1.4)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                onPressed: position.statut == StatutPosition.recherche ? null : (reglages ? notifier.ouvrirReglages : notifier.activer),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(0, 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  textStyle: const TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w700),
+                ),
+                child: Text(reglages ? 'Réglages' : (erreur ? 'Réessayer' : 'Activer')),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          FilledButton(
-            onPressed: () => onChanged(true),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(0, 40),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              textStyle: const TextStyle(fontFamily: AppTheme.fontFamily, fontSize: 14, fontWeight: FontWeight.w700),
+          // Développement seulement : tester les distances hors du Gabon
+          if (kDebugMode)
+            Padding(
+              padding: const EdgeInsets.only(left: 52, top: 4),
+              child: GestureDetector(
+                onTap: () => notifier.simuler(ville),
+                child: const Text(
+                  'ou simuler une position (démo)',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.inkFaint, decoration: TextDecoration.underline),
+                ),
+              ),
             ),
-            child: const Text('Activer'),
-          ),
         ],
       ),
     );

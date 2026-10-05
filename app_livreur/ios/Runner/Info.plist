@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Livro Pro utilise votre position pour vous montrer en premier aux clients proches de vous. Elle continue d'être partagée quand l'app est en arrière-plan, tant que la localisation est activée dans Livro Pro.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Livro Pro utilise votre position pour vous montrer en premier aux clients proches de vous, y compris quand l'app est en arrière-plan.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Livro Pro utilise l'appareil photo pour votre photo de profil.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

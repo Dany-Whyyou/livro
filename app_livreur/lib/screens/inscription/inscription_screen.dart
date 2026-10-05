@@ -27,7 +27,6 @@ class _InscriptionScreenState extends ConsumerState<InscriptionScreen> {
   final _nomCtrl = TextEditingController();
   String? _vehicule;
   String? _ville;
-  bool _localisation = false;
   bool _whatsapp = false;
   String? _quartier;
 
@@ -60,10 +59,9 @@ class _InscriptionScreenState extends ConsumerState<InscriptionScreen> {
                 vehicule: _vehicule,
                 ville: ville,
                 whatsapp: _whatsapp,
-                quartier: _localisation ? null : _quartier,
+                quartier: ref.read(localisationActiveProvider) ? null : _quartier,
               ),
         );
-    ref.read(localisationActiveProvider.notifier).state = _localisation;
   }
 
   void _back() {
@@ -116,8 +114,7 @@ class _InscriptionScreenState extends ConsumerState<InscriptionScreen> {
                     }),
                   ),
                   _StepLocalisation(
-                    active: _localisation,
-                    onChanged: (v) => setState(() => _localisation = v),
+                    active: ref.watch(localisationActiveProvider),
                     ville: _ville,
                     quartier: _quartier,
                     onQuartierChanged: (q) => setState(() => _quartier = q),
@@ -341,14 +338,12 @@ class _StepZone extends StatelessWidget {
 
 class _StepLocalisation extends StatelessWidget {
   final bool active;
-  final ValueChanged<bool> onChanged;
   final String? ville;
   final String? quartier;
   final ValueChanged<String?> onQuartierChanged;
 
   const _StepLocalisation({
     required this.active,
-    required this.onChanged,
     required this.ville,
     required this.quartier,
     required this.onQuartierChanged,
@@ -365,7 +360,7 @@ class _StepLocalisation extends StatelessWidget {
             titre: 'Ma localisation',
             detail: 'Les clients voient d\'abord les livreurs les plus proches d\'eux. C\'est facultatif et modifiable à tout moment.',
           ),
-          LocalisationCard(active: active, onChanged: onChanged),
+          const LocalisationCard(),
           if (!active && ville != null && quartiersParVille.containsKey(ville)) ...[
             const SizedBox(height: 24),
             const _Label('Quartier de base (facultatif)'),

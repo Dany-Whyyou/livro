@@ -102,6 +102,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> {
             onPressed: () {
               Navigator.of(ctx).pop();
               ref.read(modeDisponibiliteProvider.notifier).state = ModeDisponibilite.indisponible;
+              ref.read(suiviPositionProvider.notifier).desactiver();
               ref.read(authProvider.notifier).logout();
               context.go('/phone');
             },
@@ -156,10 +157,7 @@ class _AccueilScreenState extends ConsumerState<AccueilScreen> {
               ),
             const SizedBox(height: 28),
             const SizedBox(height: 12),
-            LocalisationCard(
-              active: ref.watch(localisationActiveProvider),
-              onChanged: (v) => ref.read(localisationActiveProvider.notifier).state = v,
-            ),
+            const LocalisationCard(),
             if (!ref.watch(localisationActiveProvider) && quartiersParVille.containsKey(_ville)) ...[
               const SizedBox(height: 28),
               const SectionTitle('Quartier de base'),
